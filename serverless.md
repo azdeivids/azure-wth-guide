@@ -20,11 +20,6 @@
 - [Azure Logic Apps](https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview)
 	- [Azure Functions Workflows](https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-azure-functions?tabs=consumption#call-azure-functions-from-logic-apps)
 -------------------------------------------
-## Review Later
-
-- [Get Started using Az Dev CLI (Preview)](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/get-started?tabs=baremetal&pivots=programming-language-nodejs)
-
--------------------------------
 # Serverless
 
 ## Run the function locally.
@@ -418,3 +413,28 @@ We can see here how the metrics have decreased after the upload of 1000 images a
 - Select the consumption based plan.
 ![[Pasted image 20230104235542.png]]
 
+2. Set up a an app that executes every 15 minutes and calls the *ExportLicensePlates* function from the *tollbooth-azfun-app* application.
+- Select the `Reccurance` trigger and set the value to 15 minutes.
+- Add an Azure Functions action and select the *ExportLicensePlates* function from the tollboot-azfun-app.
+- Add A Control condition where status code is equal to 200.
+![[Pasted image 20230105185625.png]]
+
+- In the false condition send an email with the body containing the status code. 
+	- Enter the email address: `deivids@deividsegle.com`
+	- Enter the subject: `Failed license plate export.``
+	- Enter the body.
+![[Pasted image 20230105223650.png]]
+
+If the status code will be anything other than 200 we should receive an email informing us that the export failed due to no license plates to process.
+
+- Save and run the logic app. Check the email and ensure that the app is working.
+
+3. Open the **FileMethods.cs** and **DatabaseMethods.cs** and finish the code to extract the data from CosmosDB and uploade it to the **Export** container.
+4. Publish the app to azure: `func azure functionapp publish tollbooth-azfun-app --dotnet`
+5. In the **tollbooth-azfun-app** configuration add the following setting: `FUNCTIONS_V2_COMPATIBILITY_MODE` with a value to `true`.
+6. Test that the app is working as expected and that the data is being populated in the export container.
+![[Pasted image 20230105230651.png]]
+
+The .csv file has successfully been created and populated.
+
+--------
